@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/validators.dart';
+
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -10,65 +10,128 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _obscureText = true;
 
-  void seConnecter() {
-    // Lance toutes les vérifications du formulaire
-    if (formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Connexion réussie')),
-      );
+  // Affiche un message en bas de l'écran
+  void _afficherMessage(String message, {bool erreur = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: erreur ? Colors.red : null,
+      ),
+    );
+  }
+
+  void _seConnecter() {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      _afficherMessage('Veuillez remplir tous les champs', erreur: true);
+      return;
     }
+
+    if (!email.contains('@')) {
+      _afficherMessage('Veuillez entrer un email valide', erreur: true);
+      return;
+    }
+
+    _afficherMessage('Connexion réussie ! Bienvenue $email');
+    _emailController.clear();
+    _passwordController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Connexion')),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Form(
-          key: formKey,
+      backgroundColor: Colors.grey[100],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextFormField(
+              const Text(
+                'Connexion',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
+              const SizedBox(height: 40),
+
+              // Champ Email
+              TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
                   labelText: 'Email',
+                  prefixIcon: Icon(Icons.email),
                   border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.white,
                 ),
-                validator: Validators.email,
-              ),
-              const SizedBox(height: 15),
-
-              TextFormField(
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Mot de passe',
-                  border: OutlineInputBorder(),
-                ),
-                validator: Validators.motDePasse,
               ),
               const SizedBox(height: 20),
 
-              ElevatedButton(
-                onPressed: seConnecter,
-                child: const Text('Se connecter'),
+              // Champ Mot de passe
+              TextField(
+                controller: _passwordController,
+                obscureText: _obscureText,
+                decoration: InputDecoration(
+                  labelText: 'Mot de passe',
+                  prefixIcon: const Icon(Icons.lock),
+                  border: const OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.white,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureText ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                  ),
+                ),
               ),
+              const SizedBox(height: 30),
+
+              ElevatedButton(
+                onPressed: _seConnecter,
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  child: Text('Se connecter', style: TextStyle(fontSize: 18)),
+                ),
+              ),
+              const SizedBox(height: 20),
 
               TextButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const RegisterPage()),
+                    MaterialPageRoute(
+                      builder: (context) => const RegisterPage(),
+                    ),
                   );
                 },
-                child: const Text("Pas de compte ? S'inscrire"),
+                child: const Text('Créer un compte'),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }
