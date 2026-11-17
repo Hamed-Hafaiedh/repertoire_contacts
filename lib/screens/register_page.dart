@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -11,8 +12,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmController = TextEditingController();
-  bool _obscureText = true;
+  final _confirmController = TextEditingController(); // Confirmation du mot de passe
+  bool _obscureText = true; // gère l'affichage du MDP
 
   // Affiche un message en bas de l'écran
   void _afficherMessage(String message, {bool erreur = false}) {
@@ -30,23 +31,24 @@ class _RegisterPageState extends State<RegisterPage> {
     String password = _passwordController.text;
     String confirm = _confirmController.text;
 
+    // Validation des champs
     if (name.isEmpty || email.isEmpty || password.isEmpty || confirm.isEmpty) {
       _afficherMessage('Veuillez remplir tous les champs', erreur: true);
       return;
     }
-
+    // Validation de l'email
     if (!email.contains('@')) {
       _afficherMessage('Veuillez entrer un email valide', erreur: true);
       return;
     }
-
+    // Validation du mot de passe
     if (password != confirm) {
       _afficherMessage('Les mots de passe sont différents', erreur: true);
       return;
     }
-
+    // Si toutes les validations sont réussies, on crée le compte
     _afficherMessage('Compte créé');
-    Navigator.pop(context); // retour à la page de connexion
+    context.pop(); // retour à la page de connexion
   }
 
   @override
@@ -125,6 +127,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 30),
 
+                // Bouton S'inscrire
                 ElevatedButton(
                   onPressed: _sInscrire,
                   child: const Padding(
@@ -140,6 +143,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
+  // Nettoyage des contrôleurs lors de la suppression de la page
   @override
   void dispose() {
     _nameController.dispose();

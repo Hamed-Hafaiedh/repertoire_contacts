@@ -1,6 +1,6 @@
+// Import des packages nécessaires
 import 'package:flutter/material.dart';
-
-import 'register_page.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -12,7 +12,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscureText = true;
+  bool _obscureText = true; // gère l'affichage du MDP
 
   // Affiche un message en bas de l'écran
   void _afficherMessage(String message, {bool erreur = false}) {
@@ -28,19 +28,23 @@ class _LoginPageState extends State<LoginPage> {
     String email = _emailController.text.trim();
     String password = _passwordController.text;
 
+    // Validation des champs vides
     if (email.isEmpty || password.isEmpty) {
       _afficherMessage('Veuillez remplir tous les champs', erreur: true);
       return;
     }
-
+    // Validation de l'email
     if (!email.contains('@')) {
       _afficherMessage('Veuillez entrer un email valide', erreur: true);
       return;
     }
-
+    // Connexion réussie
     _afficherMessage('Connexion réussie ! Bienvenue $email');
     _emailController.clear();
     _passwordController.clear();
+
+    // Aller à la liste des contacts (remplace la page de connexion)
+    context.go('/contacts');
   }
 
   @override
@@ -111,14 +115,7 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 20),
 
               TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RegisterPage(),
-                    ),
-                  );
-                },
+                onPressed: () => context.push('/register'),
                 child: const Text('Créer un compte'),
               ),
             ],
